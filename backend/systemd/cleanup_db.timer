@@ -1,0 +1,11 @@
+[Unit]
+Description=Run cleanup_db.service daily at 03:00
+
+[Timer]
+Unit=cleanup_db.service
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

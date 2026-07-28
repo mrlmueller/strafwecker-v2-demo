@@ -1,0 +1,13 @@
+[Unit]
+Description=Strafwecker Network State Logger (one-shot)
+After=strafwecker-api.service
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/strafwecker/backend
+EnvironmentFile=/home/pi/strafwecker/backend/.env
+ExecStart=/home/pi/strafwecker/backend/.venv/bin/python log_network_data.py
+
+[Install]
+WantedBy=multi-user.target

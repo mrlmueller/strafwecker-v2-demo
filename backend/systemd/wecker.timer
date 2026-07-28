@@ -1,0 +1,12 @@
+[Unit]
+Description=Run wecker.service once per minute + 1 second
+
+[Timer]
+OnCalendar=*-*-* *:*:01
+AccuracySec=1
+RandomizedDelaySec=0
+Unit=wecker.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

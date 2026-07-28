@@ -1,0 +1,13 @@
+[Unit]
+Description=Strafwecker Alarm Checker (one-shot)
+After=strafwecker-api.service
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/strafwecker/backend
+EnvironmentFile=/home/pi/strafwecker/backend/.env
+ExecStart=/home/pi/strafwecker/backend/.venv/bin/python wecker.py
+
+[Install]
+WantedBy=multi-user.target

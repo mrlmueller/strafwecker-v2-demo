@@ -1,0 +1,34 @@
+name: ESP32 Code Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "esp32/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: pip install ruff pytest
+
+      - name: Install MicroPython stubs
+        run: pip install micropython-esp32-stubs || true
+        # Stubs may not cover all modules; failures here are non-fatal
+
+      - name: Syntax check
+        run: python -m py_compile esp32/main.py
+
+      - name: Lint
+        run: ruff check esp32/ --ignore E501
+
+      - name: Run logic tests
+        run: pytest esp32/tests/ -v

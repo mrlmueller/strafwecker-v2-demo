@@ -1,0 +1,10 @@
+[Unit]
+Description=Strafwecker Network Reboot Check
+After=network.target
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/strafwecker/backend
+EnvironmentFile=/home/pi/strafwecker/backend/.env
+ExecStart=/home/pi/strafwecker/backend/.venv/bin/python network_reboot.py

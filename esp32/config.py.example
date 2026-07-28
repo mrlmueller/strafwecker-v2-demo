@@ -1,0 +1,8 @@
+# Copy this to config.py and fill in real values.
+# config.py is in .gitignore and must never be committed.
+PI_URL = "http://192.168.x.x:8000/api/v1/esp/callback"
+CLOUD_RUN_URL = "https://us-central1-your-project.cloudfunctions.net/send_money"
+API_KEY = "your_api_key_here"
+SECRET_KEY = "your_secret_key_here"
+SSID = "your_wifi_ssid"
+WLAN_PASSWORD = "your_wifi_password"

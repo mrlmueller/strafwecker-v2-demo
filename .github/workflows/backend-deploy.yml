@@ -1,0 +1,52 @@
+name: Deploy Backend to Pi
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        working-directory: /home/pi/strafwecker
+        run: git pull origin main
+
+      - name: Install / update dependencies
+        working-directory: /home/pi/strafwecker/backend
+        run: |
+          .venv/bin/pip install --prefer-binary -r deploy-requirements.txt
+
+      - name: Run unit tests
+        working-directory: /home/pi/strafwecker/backend
+        run: .venv/bin/pytest tests/unit/ -v --tb=short
+
+      - name: Apply database migrations
+        working-directory: /home/pi/strafwecker/backend
+        run: .venv/bin/alembic upgrade head
+
+      - name: Copy systemd units
+        run: |
+          # Copy every *.service / *.timer in backend/systemd/ so adding a new
+          # unit only requires committing the file — no workflow edit needed.
+          sudo cp /home/pi/strafwecker/backend/systemd/*.service /etc/systemd/system/
+          sudo cp /home/pi/strafwecker/backend/systemd/*.timer /etc/systemd/system/
+          sudo systemctl daemon-reload
+
+      - name: Restart services and timers
+        run: |
+          sudo systemctl restart strafwecker-api.service
+          sudo systemctl restart wecker.timer network_reboot.timer
+          # Enable + start any timer that exists in the repo. Idempotent.
+          for unit in /home/pi/strafwecker/backend/systemd/*.timer; do
+            name=$(basename "$unit")
+            sudo systemctl enable --now "$name"
+          done
+
+      - name: Verify service is running
+        run: |
+          sleep 4
+          sudo systemctl is-active strafwecker-api.service

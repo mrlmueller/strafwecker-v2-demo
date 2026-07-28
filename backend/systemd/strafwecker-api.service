@@ -1,0 +1,18 @@
+[Unit]
+Description=Strafwecker FastAPI Server
+After=network.target sound.target
+Wants=sound.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/strafwecker/backend
+EnvironmentFile=/home/pi/strafwecker/backend/.env
+Environment="SDL_AUDIODRIVER=alsa"
+Environment="AUDIODEV=default"
+ExecStart=/home/pi/strafwecker/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
+Restart=always
+RestartSec=5
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
