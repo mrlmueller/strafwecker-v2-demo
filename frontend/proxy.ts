@@ -31,7 +31,13 @@ export function proxy(request: NextRequest) {
   }
 
   // ─── 3) IP-Whitelist ──────────────────────────────────────
-  const allowedIps = ["192.168.178.48", "127.0.0.1", "::1"];
+  // Zusätzliche erlaubte Adressen kommen aus ALLOWED_CLIENT_IPS
+  // (kommagetrennt), damit keine privaten Adressen im Code stehen.
+  const extraIps = (process.env.ALLOWED_CLIENT_IPS ?? "")
+    .split(",")
+    .map((ip) => ip.trim())
+    .filter(Boolean);
+  const allowedIps = ["127.0.0.1", "::1", ...extraIps];
   const xForwardedFor = request.headers.get("x-forwarded-for");
   const forwardedIp = xForwardedFor
     ? xForwardedFor.split(",").map((ip) => ip.trim())[0]
